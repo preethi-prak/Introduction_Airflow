@@ -1,6 +1,6 @@
 from airflow import DAG
-from airflow.operators.dummy_operator import DummyOperator
-from datetime import datetime
+from airflow.operators.empty import EmptyOperator  # Updated import statement
+from datetime import datetime, timedelta
 
 default_args = {
     'owner': 'airflow',
@@ -11,10 +11,10 @@ default_args = {
 
 with DAG('Introduction_Airflow',
          default_args=default_args,
-         schedule_interval='@daily',
+         schedule='@daily',  # Updated parameter
          catchup=False) as dag:
 
-    start = DummyOperator(task_id='start')
-    end = DummyOperator(task_id='end')
+    start = EmptyOperator(task_id='start')  # Updated class name
+    end = EmptyOperator(task_id='end')  # Updated class name
 
     start >> end

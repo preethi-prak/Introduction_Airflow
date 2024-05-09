@@ -1,20 +1,26 @@
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator  # Updated import statement
-from datetime import datetime, timedelta
+from airflow.utils.dates import days_ago
+from my_custom_operator import MyCustomOperator
 
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2022, 1, 1),
+    'depends_on_past': False,
+    'email_on_failure': False,
+    'email_on_retry': False,
     'retries': 1,
-    'retry_delay': timedelta(minutes=5),
 }
 
-with DAG('Introduction_Airflow',
-         default_args=default_args,
-         schedule='@daily',  # Updated parameter
-         catchup=False) as dag:
+with DAG(
+    'my_custom_dag',
+    default_args=default_args,
+    description='A simple tutorial DAG',
+    schedule_interval='@daily',
+    start_date=days_ago(2),
+    tags=['example'],
+) as dag:
+    custom_task = MyCustomOperator(
+        task_id='print_hello',
+        my_param='World'
+    )
 
-    start = EmptyOperator(task_id='start')  # Updated class name
-    end = EmptyOperator(task_id='end')  # Updated class name
-
-    start >> end
+custom_task
